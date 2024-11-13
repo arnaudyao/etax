@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * @property float $id_structure
+ * @property string $libelle_structure
+ * @property float $id_user
+ * @property boolean $flag_structure
+ * @property string $updated_at
+ * @property string $created_at
+ * @property SousStructure[] $sousStructures
+ */
+class Structure extends Model
+{
+    /**
+     * The table associated with the model.
+     * 
+     * @var string
+     */
+    protected $table = 'structure';
+
+    /**
+     * The primary key for the model.
+     * 
+     * @var string
+     */
+    protected $primaryKey = 'id_structure';
+
+    /**
+     * The "type" of the auto-incrementing ID.
+     * 
+     * @var string
+     */
+    protected $keyType = 'float';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     * 
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * @var array
+     */
+    protected $fillable = ['libelle_structure', 'id_user', 'flag_structure', 'updated_at', 'created_at'];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function sousStructures()
+    {
+        return $this->hasMany('App\Models\SousStructure', 'id_structure', 'id_structure');
+    }
+}
