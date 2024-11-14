@@ -37,5 +37,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::match(['get', 'post'], '/desactiveparametresysteme/{id}/{id1}', [App\Http\Controllers\ParametreController::class, 'desactiveparametresysteme'])->name('desactiveparametresysteme');
 
     Route::match(['get', 'post'], '/contribuables', [\App\Http\Controllers\ContribuablesController::class, 'index'])->name('contribuables');
+    Route::match(['get', 'post'], '/paiements', [\App\Http\Controllers\PaiementsController::class, 'index'])->name('paiements');
 
 });

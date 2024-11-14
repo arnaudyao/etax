@@ -2,8 +2,8 @@
 
 @section('content')
 
-    @php($Module='Contribuables')
-    @php($titre='Liste des contribuables')
+    @php($Module='Contribuable')
+    @php($titre='Le contribuable')
     @php($lien='')
     <?php
     if (isset($Result)) {
@@ -99,6 +99,7 @@
                                     {!! Html::form()->close() !!}
                                 </div>
                             </div>
+                            <?php if (isset($ResultContribuable)) { ?>
                             <div class="row">
                                 <div class="col-md-7 col-sm-12">
                                     <div class="card">
@@ -115,54 +116,83 @@
                                                     <tbody>
                                                     <tr>
                                                         <th>NCC</th>
-                                                        <td>Collapse card  </td>
+                                                        <td>{{ $ResultContribuable->ncc }} </td>
                                                     </tr>
                                                     <tr>
                                                         <th>Raison social</th>
-                                                        <td>Remove card from page using remove card action</td>
+                                                        <td>{{ $ResultContribuable->raison_sociale }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Sigle</th>
-                                                        <td>Remove card  </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Forme juridique</th>
-                                                        <td>Remove card from  </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>N°d'identification fiscale</th>
-                                                        <td>Remove card from  </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Code regime</th>
-                                                        <td>Remove card from  </td>
+                                                        <td>{!! $ResultContribuable->sigle  ?? '<span class="badge badge-light-secondary">N/A</span>' !!}</td>
                                                     </tr>
 
                                                     <tr>
-                                                        <th>Adresse</th>
-                                                        <td>Remove card from  </td>
+                                                        <th>Statut</th>
+                                                        <td><span class="badge bg-warning">{{ $ResultContribuable->contribuable_statut }}</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                    <tr>
+                                                        <th>Forme juridique</th>
+                                                        <td> {{ $ResultContribuable->forme_juridique }} ({{ $ResultContribuable->code_forme_juridique }}) </td>
+                                                    </tr>
+                                                    <th>Localisation</th>
+                                                    <td>{!! $ResultContribuable->localisation  ?? '<span class="badge badge-light-secondary">N/A</span>' !!}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Adresse postale</th>
+                                                        <td>{!!  $ResultContribuable->adresse_postale  ?? '<span class="badge badge-light-secondary">N/A</span>' !!}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Ville</th>
+                                                        <td>{!! $ResultContribuable->ville_nom ?? '<span class="badge badge-light-secondary">N/A</span>' !!}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Commune</th>
+                                                        <td>{!! $ResultContribuable->commune_nom ?? '<span class="badge badge-light-secondary">N/A</span>' !!}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Telephone</th>
-                                                        <td>Remove card from  </td>
+                                                        <td>{!! $ResultContribuable->telephone  ?? '<span class="badge badge-light-secondary">N/A</span>' !!}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Céllulaire</th>
+                                                        <td>{!! $ResultContribuable->cellulaire ?? '<span class="badge badge-light-secondary">N/A</span>'  !!}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Email</th>
-                                                        <td>Remove card from  </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Code postale</th>
-                                                        <td>Remove card from  </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Activité</th>
-                                                        <td>Remove card from  </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Etat</th>
-                                                        <td>Remove card from  </td>
+                                                        <td>{!! $ResultContribuable->email ?? '<span class="badge badge-light-secondary">N/A</span>'  !!}</td>
                                                     </tr>
 
+                                                    <tr>
+                                                        <th>Activité</th>
+                                                        <td>{!! $ResultContribuable->activite  ?? '<span class="badge badge-light-secondary">N/A</span>' !!}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Poste comptable</th>
+                                                        <td>{!! $ResultContribuable->postes_comptables ?? '<span class="badge badge-light-secondary">N/A</span>' !!}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Dirigeant</th>
+                                                        <td>{!! $ResultContribuable->dirigeant ?? '<span class="badge badge-light-secondary">N/A</span>'  !!}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Date immatriculation</th>
+                                                        <td>{!! $ResultContribuable->date_immatriculation ?? '<span class="badge badge-light-secondary">N/A</span>' !!}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Date début d'activité</th>
+                                                        <td>{!!  $ResultContribuable->date_debut_activite  ?? '<span class="badge badge-light-secondary">N/A</span>'  !!}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Date cessation</th>
+                                                        <td>{!! $ResultContribuable->date_cessation  ?? '<span class="badge badge-light-secondary">N/A</span>' !!}  </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Classification DGI</th>
+                                                        <td>{{ $ResultContribuable->classification_dgi  ?? 'N/A' }}</td>
+                                                    </tr>
 
                                                     </tbody>
                                                 </table>
@@ -193,40 +223,14 @@
                                                             </tr>
                                                             </thead>
                                                             <tbody>
-                                                            <tr>
-                                                                <td>NCC</td>
-                                                                <td>Collapse</td>
-                                                                <td>Collapse</td>
-                                                                <td>Collapse</td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12 col-sm-12">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h4 class="card-title">Historique des formes juridiques</h4>
-                                                    <div class="heading-elements">
-
-                                                    </div>
-                                                </div>
-                                                <div class="card-content">
-                                                    <div class="card-body">
-                                                        <table class="table table-bordered">
-                                                            <thead>
-                                                            <tr>
-                                                                <th>Ancienne</th>
-                                                                <th>Nouvelle</th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                            <tr>
-                                                                <td>NCC</td>
-                                                                <td>Collapse</td>
-                                                            </tr>
+                                                            @foreach ($ResultPaiement as $key => $data)
+                                                                <tr >
+                                                                    <td>{{ $data->exercice_imposition }}</td>
+                                                                    <td nowrap="nowrap" align="right">{{ number_format($data->montant_fpc_regle, 0, ' ', ' ') }}</td>
+                                                                    <td nowrap="nowrap" align="right">{{ number_format($data->montant_tap_regle, 0, ' ', ' ') }}</td>
+                                                                    <td nowrap="nowrap" align="right">{{ number_format($data->montant_fpc_regle + $data->montant_tap_regle, 0, ' ', ' ') }}</td>
+                                                                </tr>
+                                                            @endforeach
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -247,13 +251,48 @@
                                                         <table class="table table-bordered">
                                                             <thead>
                                                             <tr>
-                                                                <th>Ancienne</th>
+                                                                <th>Activités secondaires</th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>
+                                                            @foreach ($ResultHistoActiveSecond as $key => $data)
+                                                                <tr>
+                                                                    <td>{{ $data->activite }}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h4 class="card-title">Historique des formes juridiques</h4>
+                                                    <div class="heading-elements">
+
+                                                    </div>
+                                                </div>
+                                                <div class="card-content">
+                                                    <div class="card-body">
+                                                        <table class="table table-bordered">
+                                                            <thead>
                                                             <tr>
-                                                                <td>NCC</td>
+                                                                <th>Date creation</th>
+                                                                <th>Ancienne</th>
+                                                                <th>Nouvelle</th>
                                                             </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            @foreach ($ResultHistoFormeJurid as $key => $data)
+                                                                <tr>
+                                                                    <td>{{ $data->date_creation }}</td>
+                                                                    <td>{{ $data->forme_juridique_avant }}</td>
+                                                                    <td>{{ $data->forme_juridique_apres }}</td>
+                                                                </tr>
+                                                            @endforeach
+
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -265,6 +304,7 @@
 
 
                             </div>
+                            <?php } ?>
                         </div>
                     </div>
                 </section>

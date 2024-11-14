@@ -21,6 +21,8 @@ class ContribuablesController extends Controller
     {
         $ResultContribuable = null;
         $ResultHistoFormeJurid = null;
+        $ResultPaiement = null;
+        $ResultHistoStatu = null;
         $ResultHistoActiveSecond = null;
         if ($request->isMethod('post') and $request->input('Rech') == "Rech") {
             $this->validate($request, [
@@ -31,40 +33,84 @@ class ContribuablesController extends Controller
             $ncc = trim($request->input('ncc'));
             //-----Le contribuable----------------------
             $ResultContribuable = DB::table('vm_contribuable')
-                ->select(['ncc', 'raison_sociale', 'sigle', 'adresse', 'forme_juridique_id', 'num_identification_fiscale', 'telephone', 'email',
-                    'site_web', 'code_postale', 'code_regime', 'num_piece', 'annee_imposition', 'periode_imposition', 'num_declaration',
-                    'date_imposition', 'montant_payer', 'date_paiement', 'banque_paiement', 'etablissement_bancaire', 'num_compte',
-                    'numero_employe', 'activite_id', 'date_creation', 'date_modification', 'etat_actif', 'classification_activite'])
-                ->where('ncc', '=', $ncc)
+                ->leftjoin('vm_ville', 'vm_contribuable.ville_id', '=', 'vm_ville.ville_id')
+                ->leftjoin('vm_commune', 'vm_contribuable.commune_id', '=', 'vm_commune.commune_id')
+                ->leftjoin('vm_activite', 'vm_contribuable.activite_id', '=', 'vm_activite.activite_id')
+                ->leftjoin('vm_postes_comptables', 'vm_contribuable.poste_comptable_id', '=', 'vm_postes_comptables.poste_comptable_id')
+                ->leftjoin('vm_contribuable_statut', 'vm_contribuable.contribuable_statut_id', '=', 'vm_contribuable_statut.contribuable_statut_id')
+                ->join('vm_forme_juridique', 'vm_contribuable.forme_juridique_id', '=', 'vm_forme_juridique.forme_juridique_id')
+                ->select([
+                    'vm_contribuable.ncc',
+                    'vm_contribuable.raison_sociale',
+                    'vm_contribuable.sigle',
+                    'vm_contribuable.contribuable_statut_id',
+                    'vm_contribuable.forme_juridique_id',
+                    'vm_contribuable.localisation',
+                    'vm_contribuable.adresse_postale',
+                    'vm_contribuable.ville_id',
+                    'vm_contribuable.telephone',
+                    'vm_contribuable.cellulaire',
+                    'vm_contribuable.poste_comptable_id',
+                    'vm_activite.libelle as activite',
+                    'vm_contribuable.dirigeant',
+                    'vm_contribuable.email',
+                    'vm_contribuable.commune_id',
+                    'vm_contribuable.section',
+                    'vm_contribuable.parcelle',
+                    'vm_contribuable.lot',
+                    'vm_contribuable.ilot',
+                    'vm_contribuable.nombre_employe',
+                    'vm_contribuable.date_immatriculation',
+                    'vm_contribuable.date_modification',
+                    'vm_contribuable.date_cessation',
+                    'vm_contribuable.date_debut_activite',
+                    'vm_contribuable.classification_dgi',
+                    'vm_contribuable_statut.libelle as contribuable_statut',
+                    'vm_forme_juridique.libelle as forme_juridique',
+                    'vm_forme_juridique.code_libelle as code_forme_juridique',
+                    'vm_postes_comptables.libelle as postes_comptables',
+                    'vm_ville.libelle as ville_nom',        // Remplacez 'nom' par le nom de la colonne voulue de la table ville
+                    'vm_commune.libelle as commune_nom'     // Remplacez 'nom' par le nom de la colonne voulue de la table commune
+                ])
+                ->where('vm_contribuable.ncc', '=', $ncc)
                 ->first();
             //----- Liste de l'historique des forme juridique----------------------
-            $ResultHistoFormeJurid = DB::table('vm_contribuable')
-                ->select(['ncc', 'raison_sociale', 'sigle'])
+            $ResultHistoFormeJurid = DB::table('vm_histo_forme_juridiques')
+                ->leftjoin('vm_forme_juridique', 'vm_histo_forme_juridiques.forme_juridique_id_avant', '=', 'vm_forme_juridique.forme_juridique_id')
+                ->leftjoin('vm_forme_juridique as apres', 'vm_histo_forme_juridiques.forme_juridique_id_apres', '=', 'apres.forme_juridique_id')
+                ->select(['vm_forme_juridique.code_libelle as forme_juridique_avant',
+                            'apres.code_libelle as forme_juridique_apres','vm_histo_forme_juridiques.date_creation'])
                 ->where('ncc', '=', $ncc)
                 ->get();
 
             //-----Les activités secondaires----------------------
-            $ResultHistoActiveSecond = DB::table('vm_contribuable')
-                ->select(['ncc', 'raison_sociale', 'sigle'])
+            $ResultHistoActiveSecond = DB::table('vm_activites_secondaires')
+                ->leftjoin('vm_activite', 'vm_activites_secondaires.activite_id', '=', 'vm_activite.activite_id')
+                ->select(['vm_activite.libelle as activite',
+                    'localisation_etablissement'])
                 ->where('ncc', '=', $ncc)
                 ->get();
-
-            //-----Liste des paiements par annees----------------------
-            $Result = DB::table('vm_paiements','vf')
-                ->select(['vf.exercice_imposition',
-                    DB::raw('SUM(vf.mtt_reglement_fact) as mtt_reglement_fact'),
-                    DB::raw('SUM(vf.mtt_tva_fact) as mtt_tva_fact'),
-                ])
+            //-----Les activités secondaires----------------------
+            $ResultHistoStatu = DB::table('vm_histo_contribuale_statut')
+                ->select(['contribuable_statut_id_avant', 'contribuable_statut_id_apres'])
                 ->where('ncc', '=', $ncc)
-                ->groupBy('vf.lib_agce')
-                ->orderByDesc('vf.lib_agce' )
+                ->get();
+            //-----Liste des paiements par annees----------------------
+            $ResultPaiement = DB::table('vm_paiements', 'vf')
+                ->select(['vf.exercice_imposition',
+                    DB::raw('SUM(vf.montant_fpc_regle) as montant_fpc_regle'),
+                    DB::raw('SUM(vf.montant_tap_regle) as montant_tap_regle'),
+                ])
+                ->where([['ncc', '=', $ncc], ['paiement_statut_id', '=', '3']])
+                ->groupBy('vf.exercice_imposition')
+                ->orderByDesc('vf.exercice_imposition')
                 ->get();
 
             if (!isset($ResultContribuable)) {
                 return redirect()->route('contribuables')->with('echec', 'Aucune information trouvée.');
             }
         }
-        return view('contribuables.index', compact('ResultContribuable','ResultHistoFormeJurid','ResultHistoActiveSecond'));
+        return view('contribuables.index', compact('ResultContribuable', 'ResultHistoStatu', 'ResultPaiement', 'ResultHistoFormeJurid', 'ResultHistoActiveSecond'));
     }
 
 
