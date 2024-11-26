@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $libelle
  * @property string $created_at
  * @property string $updated_at
+ * @property boolean is_valide
+ * @property string priorite_sousmenu
  * @property Menu $menu
  */
 class Sousmenus extends Model
@@ -32,7 +34,7 @@ class Sousmenus extends Model
     /**
      * @var array
      */
-    protected $fillable = ['menu_id_menu', 'sousmenu', 'libelle', 'created_at', 'updated_at'];
+    protected $fillable = ['menu_id_menu', 'sousmenu', 'libelle','is_valide', 'priorite_sousmenu','created_at', 'updated_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

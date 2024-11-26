@@ -9,24 +9,6 @@ use DB;
 class Fonction
 {
 
-    public static function getRecherche($valRech) {
-
-        $words = explode(' ', $valRech);
-        $resultats = DB::table('vue_recherche_general');
-        foreach ($words as $word) {
-            $resultats ->orWhere(DB::raw('lower(libelle_licences)'), 'like', '%' .\Illuminate\Support\Str::lower($word). '%')
-                ->orWhere(DB::raw('lower(libelle_nat_licence)') , 'like', '%' . \Illuminate\Support\Str::lower($word) . '%')
-                ->orWhere(DB::raw('lower(libelle_autorite_deliv)'), 'like', '%' . \Illuminate\Support\Str::lower($word) . '%')
-                ->orWhere(DB::raw('lower(libelle_structure)'), 'like', '%' . \Illuminate\Support\Str::lower($word) . '%')
-                ->orWhere(DB::raw('lower(libelle_ministere)'), 'like', '%' . \Illuminate\Support\Str::lower($word) . '%')
-                ->orWhere(DB::raw('lower(libelle_sous_secteur)'), 'like', '%' . \Illuminate\Support\Str::lower($word) . '%')
-                ->orWhere(DB::raw('lower(libelle_secteur_activite)'), 'like', '%' . \Illuminate\Support\Str::lower($word) . '%')
-                ->orWhere(DB::raw('lower(libelle_categorie_licence)'), 'like', '%' . \Illuminate\Support\Str::lower($word) . '%');
-        }
-        $resultats = $resultats->get();
-
-        return (isset($resultats) ? $resultats : '');
-    }
 
     public static function replaceSpecialChar($str) {
         $ch0 = array(

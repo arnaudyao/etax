@@ -30,7 +30,7 @@ class ContribuablesController extends Controller
             ], [
                 'ncc.required' => 'Veuillez saisir le NCC du contribuable.',
             ]);
-            $ncc = trim($request->input('ncc'));
+            $ncc = trim(strtoupper($request->input('ncc')));
             //-----Le contribuable----------------------
             $ResultContribuable = DB::table('vm_contribuable')
                 ->leftjoin('vm_ville', 'vm_contribuable.ville_id', '=', 'vm_ville.ville_id')

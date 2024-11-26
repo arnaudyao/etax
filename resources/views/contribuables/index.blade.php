@@ -101,7 +101,7 @@
                             </div>
                             <?php if (isset($ResultContribuable)) { ?>
                             <div class="row">
-                                <div class="col-md-7 col-sm-12">
+                                <div class="col-md-6 col-sm-12">
                                     <div class="card">
                                         <div class="card-header">
                                             <h4 class="card-title">Le contribuable</h4>
@@ -129,12 +129,16 @@
 
                                                     <tr>
                                                         <th>Statut</th>
-                                                        <td><span class="badge bg-warning">{{ $ResultContribuable->contribuable_statut }}</span></td>
+                                                        <td><span
+                                                                class="badge bg-warning">{{ $ResultContribuable->contribuable_statut }}</span>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                     <tr>
                                                         <th>Forme juridique</th>
-                                                        <td> {{ $ResultContribuable->forme_juridique }} ({{ $ResultContribuable->code_forme_juridique }}) </td>
+                                                        <td> {{ $ResultContribuable->forme_juridique }}
+                                                            ({{ $ResultContribuable->code_forme_juridique }})
+                                                        </td>
                                                     </tr>
                                                     <th>Localisation</th>
                                                     <td>{!! $ResultContribuable->localisation  ?? '<span class="badge badge-light-secondary">N/A</span>' !!}</td>
@@ -200,7 +204,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-5 col-sm-12">
+                                <div class="col-md-6 col-sm-12">
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12">
                                             <div class="card">
@@ -224,11 +228,14 @@
                                                             </thead>
                                                             <tbody>
                                                             @foreach ($ResultPaiement as $key => $data)
-                                                                <tr >
+                                                                <tr>
                                                                     <td>{{ $data->exercice_imposition }}</td>
-                                                                    <td nowrap="nowrap" align="right">{{ number_format($data->montant_fpc_regle, 0, ' ', ' ') }}</td>
-                                                                    <td nowrap="nowrap" align="right">{{ number_format($data->montant_tap_regle, 0, ' ', ' ') }}</td>
-                                                                    <td nowrap="nowrap" align="right">{{ number_format($data->montant_fpc_regle + $data->montant_tap_regle, 0, ' ', ' ') }}</td>
+                                                                    <td nowrap="nowrap"
+                                                                        align="right">{{ number_format($data->montant_fpc_regle, 1, ',', ' ') }}</td>
+                                                                    <td nowrap="nowrap"
+                                                                        align="right">{{ number_format($data->montant_tap_regle,  1, ',', ' ') }}</td>
+                                                                    <td nowrap="nowrap"
+                                                                        align="right">{{ number_format($data->montant_fpc_regle + $data->montant_tap_regle, 1, ',', ' ') }}</td>
                                                                 </tr>
                                                             @endforeach
                                                             </tbody>

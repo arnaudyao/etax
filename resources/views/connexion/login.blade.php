@@ -71,7 +71,7 @@
                     <div class="d-flex col-lg-5 align-items-center auth-bg px-2 p-lg-5">
                         <div class="col-12 col-sm-8 col-md-6 col-lg-12 px-xl-2 mx-auto">
                             <a class=" " href="#"><img width="150px" src="/app-assets/images/logo/logo-fdfp.png"></a>
-                            <h2 class="card-title fw-bold mb-1">Bienvenue sur <b>e-TaxConsult </b>  👋</h2>
+                            <h2 class="card-title fw-bold mb-1">Bienvenue sur <b>e-Tax </b>  👋</h2>
                             <p class="card-text mb-2"> Application de consultation des données des contribuables
                                 relatives aux taxes de Formation Professionnelle Continue (TFC) et d'Apprentissage (TA)
                             </p>

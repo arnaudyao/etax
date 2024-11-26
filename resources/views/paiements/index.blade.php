@@ -6,9 +6,14 @@
     @php($titre='Paiements du contribuable')
     @php($lien='')
     <?php
-    if (isset($Result)) {
-        $ncc = \App\Helpers\Crypt::UrlCrypt(trim($_POST["ncc"]));
-        if ($ncc == '') $ncc = 0;
+    if (isset($ResultContribuable) and isset($donnees)) {
+        $nccVar = $donnees['ncc'];
+        $date0 = trim($donnees['annee0']);
+        $date1 = trim($donnees['annee1']);
+    } else {
+        $nccVar = '';
+        $date0 = date('Y');
+        $date1 = date('Y');
     }
     ?>
         <!-- BEGIN: Content-->
@@ -74,28 +79,41 @@
                                 <div class="card-body">
                                     {!! Html::form()
                                     ->method('POST')
-                                  //  ->action() // Remplacez 'votre_route' par la route souhaitée
                                     ->open() !!}
                                     <div class="row">
-                                        <div class="d-grid col-lg-4 col-md-12 mb-2 mb-lg-0">
+                                        <div class="d-grid col-lg-2 col-md-12 mb-2 mb-lg-0">
                                             <div class="mb-1">
                                                 <label> NCC :</label>
                                                 <input type="text" required
                                                        name="ncc" id="ncc"
+                                                       value="<?php echo $nccVar?>"
                                                        placeholder="Saisir le NCC"
                                                        class="form-control form-control-sm">
                                             </div>
                                         </div>
-                                        <div class="d-grid col-lg-4 col-md-12 mb-2 mb-lg-0">
+                                        <div class="d-grid col-lg-3 col-md-12 mb-2 mb-lg-0">
                                             <div class="mb-1">
-                                                <label> Exercice d'imposition:</label>
-                                                <input type="text" required
-                                                       name="annee" id="annee"
+                                                <label> Exercice d'imposition de début : </label>
+                                                <input type="number" required
+                                                       name="annee0" id="annee0"
+                                                       value="<?php echo $date0?>"
+                                                       min="2000"
+                                                       placeholder="Saisir l'année. Ex.: 2024"
+                                                       class="form-control form-control-sm">
+                                            </div>
+                                        </div>
+                                        <div class="d-grid col-lg-3 col-md-12 mb-2 mb-lg-0">
+                                            <div class="mb-1">
+                                                <label> Exercice d'imposition de fin : </label>
+                                                <input type="number" required
+                                                       name="annee1" id="annee1"
+                                                       value="<?php echo $date1?>"
+                                                       min="2000"
                                                        placeholder="Saisir l'année. Ex.: 2025"
                                                        class="form-control form-control-sm">
                                             </div>
                                         </div>
-                                        <div class="d-grid col-lg-4 col-md-12 mb-2 mb-lg-0">
+                                        <div class="d-grid col-lg-2 col-md-12 mb-2 mb-lg-0">
                                             <div class="mb-">
                                                 <br>
                                                 <button type="submit" value="Rech" name="Rech"
@@ -104,11 +122,29 @@
                                                 </button>
                                             </div>
                                         </div>
+                                        <div class="d-grid col-lg-2 col-md-12 mb-2 mb-lg-0">
+                                            <div class="mb-">
+                                                <br>
+                                                <a
+                                                    <?php if (!isset($ResultPaiement) and !isset($ResultContribuable)) { ?>
+                                                    class="btn btn-outline-secondary  btn-sm w-100 waves-effect waves-float waves-light"
+                                                    disabled="disabled"
+                                                    <?php } ?>
+                                                    <?php if (isset($ResultPaiement) and isset($ResultContribuable)) { ?>
+                                                    class="btn btn-secondary btn-sm w-100 waves-effect waves-float waves-light"
+                                                    target="_blank"
+                                                    onclick="NewWindow('/etatpaiements/apercu/{{\App\Helpers\Crypt::UrlCrypt($nccVar)}}/{{\App\Helpers\Crypt::UrlCrypt($date0)}}/{{\App\Helpers\Crypt::UrlCrypt($date1)}}','',screen.width/2,screen.height,'yes','center',1);;"
+                                                    <?php } ?>
+                                                >
+                                                    Aperçu</a>
+
+                                            </div>
+                                        </div>
                                     </div>
                                     {!! Html::form()->close() !!}
                                 </div>
                             </div>
-                            <?php if (isset($ResultPaiement)) { ?>
+                            <?php if (isset($ResultPaiement) and isset($ResultContribuable)) { ?>
                             <div class="row">
                                 <div class="col-md-12 col-sm-12">
                                     <div class="card">
@@ -119,66 +155,114 @@
                                                     <thead>
                                                     <tr>
                                                         <th>NCC</th>
+                                                        <td>{{ $ResultContribuable->ncc }}</td>
+                                                    </tr>
+                                                    <tr>
                                                         <th>Raison sociale</th>
-                                                        <th>Exercice d'imposition</th>
-                                                        <th>Periode d'imposition</th>
-                                                        <th>Type d'impot</th>
-                                                        <th>FPC Déclaré</th>
-                                                        <th>TAP Déclaré</th>
-                                                        <th>FPC Réglé</th>
-                                                        <th>TAP Réglé</th>
+                                                        <td>{{ $ResultContribuable->raison_sociale }}</td>
+                                                    </tr>
+                                                    </thead>
+                                                </table>
+                                                <br>
+                                                    <?php
+                                                    // Grouper les données par exercice_imposition (année)
+                                                    $groupedPaiements = $ResultPaiement->groupBy('exercice_imposition');
+                                                    ?>
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Impot Origine</th>
+                                                        <th>Période</th>
+                                                        <th>Montant FPC Déclaré</th>
+                                                        <th>Montant TAP Déclaré</th>
+                                                        <th>Montant FPC Réglé</th>
+                                                        <th>Montant TAP Réglé</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
                                                         <?php
-                                                        $fpcD = 0;
-                                                        $tapD = 0;
-                                                        $fpcR = 0;
-                                                        $tapR = 0;
+                                                        // Variables pour accumuler les totaux généraux
+                                                        $totalFpc = 0;
+                                                        $totalTap = 0;
+                                                        $totalFpcRegle = 0;
+                                                        $totalTapRegle = 0;
                                                         ?>
-                                                    @foreach ($ResultPaiement as $key => $data)
-                                                      <?php
-                                                            $fpcD+=$data->montant_fpc;
-                                                            $tapD+=$data->montant_tap;
-                                                            $fpcR+=$data->montant_fpc_regle;
-                                                            $tapR+=$data->montant_tap_regle;
-                                                       ?>
+
+                                                    @foreach ($groupedPaiements as $annee => $paiements)
+                                                        <!-- Afficher l'année -->
                                                         <tr>
-                                                            <td>{{ $data->ncc }}</td>
-                                                            <td>{{ $data->raison_sociale }}</td>
-                                                            <td>{{ $data->exercice_imposition }}</td>
-                                                            <td>{{ $data->periode_imposition }}</td>
-                                                            <td>{{ $data->impot_origine_id }}</td>
-                                                            <td nowrap="nowrap"
-                                                                align="right">{{ number_format($data->montant_fpc, 0, ' ', ' ') }}</td>
-                                                            <td nowrap="nowrap"
-                                                                align="right">{{ number_format($data->montant_tap, 0, ' ', ' ') }}</td>
-                                                            <td nowrap="nowrap"
-                                                                align="right">{{ number_format($data->montant_fpc_regle, 0, ' ', ' ') }}</td>
-                                                            <td nowrap="nowrap"
-                                                                align="right">{{ number_format($data->montant_tap_regle, 0, ' ', ' ') }}</td>
+                                                            <td colspan="6" align="center"><strong>ANNEE
+                                                                    : {{ $annee }}</strong></td>
+                                                        </tr>
+
+                                                        <!-- Afficher les détails pour cette année -->
+                                                        @foreach ($paiements as $paiement)
+                                                            <tr>
+                                                                <td>{{ $paiement->impot_origine_id }}</td>
+                                                                <td>{{ $paiement->periode_imposition }}</td>
+                                                                <td align="right">{{ number_format($paiement->montant_fpc, 1, ',', ' ') }}</td>
+                                                                <td align="right">{{ number_format($paiement->montant_tap, 1, ',', ' ') }}</td>
+                                                                <td align="right">{{ number_format($paiement->montant_fpc_regle, 1, ',', ' ') }}</td>
+                                                                <td align="right">{{ number_format($paiement->montant_tap_regle, 1, ',', ' ') }}</td>
+                                                            </tr>
+                                                        @endforeach
+
+                                                        <!-- Calculer et afficher les totaux pour cette année -->
+                                                            <?php
+                                                            $totalFpcAnnee = $paiements->sum('montant_fpc');
+                                                            $totalTapAnnee = $paiements->sum('montant_tap');
+                                                            $totalFpcRegleAnnee = $paiements->sum('montant_fpc_regle');
+                                                            $totalTapRegleAnnee = $paiements->sum('montant_tap_regle');
+
+                                                            // Ajouter aux totaux généraux
+                                                            $totalFpc += $totalFpcAnnee;
+                                                            $totalTap += $totalTapAnnee;
+                                                            $totalFpcRegle += $totalFpcRegleAnnee;
+                                                            $totalTapRegle += $totalTapRegleAnnee;
+                                                            ?>
+
+                                                        <tr>
+                                                            <td align="center" colspan="2"><strong>Total
+                                                                    pour {{ $annee }}</strong></td>
+                                                            <td align="right">
+                                                                <strong>{{ number_format($totalFpcAnnee, 1, ',', ' ') }}</strong>
+                                                            </td>
+                                                            <td align="right">
+                                                                <strong>{{ number_format($totalTapAnnee, 1, ',', ' ') }}</strong>
+                                                            </td>
+                                                            <td align="right">
+                                                                <strong>{{ number_format($totalFpcRegleAnnee, 1, ',', ' ') }}</strong>
+                                                            </td>
+                                                            <td align="right">
+                                                                <strong>{{ number_format($totalTapRegleAnnee, 1, ',', ' ') }}</strong>
+                                                            </td>
                                                         </tr>
                                                     @endforeach
+
+                                                    <!-- Afficher les totaux généraux -->
                                                     <tr>
-                                                        <td colspan="9">&nbsp;</td>
+                                                        <td colspan="6">&nbsp;</td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="5">Total</td>
-                                                        <td colspan="nowrap"
-                                                            align="right">{{ number_format($fpcD, 0, ' ', ' ') }}
+                                                        <td align="center" colspan="2"><strong>Total Général</strong>
                                                         </td>
-                                                        <td colspan="nowrap"
-                                                            align="right">{{  number_format($tapD, 0, ' ', ' ') }}
+                                                        <td align="right">
+                                                            <strong>{{ number_format($totalFpc, 1, ',', ' ') }}</strong>
                                                         </td>
-                                                        <td colspan="nowrap"
-                                                            align="right">{{  number_format($fpcR, 0, ' ', ' ') }}
+                                                        <td align="right">
+                                                            <strong>{{ number_format($totalTap, 1, ',', ' ') }}</strong>
                                                         </td>
-                                                        <td colspan="nowrap"
-                                                            align="right">{{  number_format($tapR, 0, ' ', ' ') }}
+                                                        <td align="right">
+                                                            <strong>{{ number_format($totalFpcRegle, 1, ',', ' ') }}</strong>
+                                                        </td>
+                                                        <td align="right">
+                                                            <strong>{{ number_format($totalTapRegle, 1, ',', ' ') }}</strong>
                                                         </td>
                                                     </tr>
                                                     </tbody>
                                                 </table>
+
+
                                             </div>
                                         </div>
                                     </div>
