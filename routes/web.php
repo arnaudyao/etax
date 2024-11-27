@@ -39,4 +39,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::match(['get', 'post'], '/contribuables', [\App\Http\Controllers\ContribuablesController::class, 'index'])->name('contribuables');
     Route::match(['get', 'post'], '/paiements', [\App\Http\Controllers\PaiementsController::class, 'index'])->name('paiements');
     Route::match(['get'], '/etatpaiements/apercu/{ncc}/{annee0}/{annee1}', [\App\Http\Controllers\PaiementsController::class, 'recu'])->name('recupaiements');
+
+    //------PARAMETRES--------------------------
+    Route::match(['get'], '/activites', [\App\Http\Controllers\ParametrevueController::class, 'activites'])->name('activites');
+    Route::match(['get'], '/banques', [\App\Http\Controllers\ParametrevueController::class, 'banques'])->name('banques');
+    Route::match(['get'], '/pcomptables', [\App\Http\Controllers\ParametrevueController::class, 'pcomptables'])->name('pcomptables');
+    Route::match(['get'], '/modepaiement', [\App\Http\Controllers\ParametrevueController::class, 'modepaiement'])->name('modepaiement');
+    Route::match(['get'], '/formejuridiques', [\App\Http\Controllers\ParametrevueController::class, 'formejuridiques'])->name('formejuridiques');
+    Route::match(['get'], '/communes', [\App\Http\Controllers\ParametrevueController::class, 'communes'])->name('communes');
+
+
 });
