@@ -60,7 +60,7 @@
 
                     <div class="d-none d-lg-flex col-lg-7 align-items-center ">
                         <div class="w-100 d-lg-flex align-items-center justify-content-center ">
-                            <img class="img-fluid" src="/app-assets/images/pages/login-v2.svg"
+                            <img class="img-fluid" src="/app-assets/images/pages/lanalyse-des-donnees.png"
                                  alt="Login V2"/>
                         </div>
 
@@ -88,7 +88,7 @@
                                 @endif
                                 <div class="mb-1">
                                     <label class="form-label" for="login-email">Email *</label>
-                                    <input autocomplete="off" class="form-control" id="login-email" type="text"
+                                    <input autocomplete="off" class="form-control form-control-sm" id="login-email" type="text"
                                            name="username" required
                                            placeholder="Email" aria-describedby="login-email" autofocus=""
                                            tabindex="1"/>
@@ -98,7 +98,7 @@
                                         <label class="form-label" for="login-password">Mot de passe *</label>
                                     </div>
                                     <div class="input-group input-group-merge form-password-toggle">
-                                        <input autocomplete="off" class="form-control form-control-merge"
+                                        <input autocomplete="off" class="form-control form-control-sm form-control-merge"
                                                required="required"
                                                id="login-password"
                                                type="password" name="password" placeholder="············"
